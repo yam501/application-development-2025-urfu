@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: hw1_pg_db_persistent
+    environment:
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: homework
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hw1_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: hw1_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: student@examle.com
+      PGADMIN_DEFAULT_PASSWORD: student
+    ports:
+      - "5050:80"
+    networks:
+      - hw1_network
+    depends_on:
+      - db
+
+networks:
+  hw1_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
