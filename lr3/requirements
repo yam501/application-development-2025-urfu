@@ -1,0 +1,6 @@
+litestar
+sqlalchemy
+asyncpg
+pydantic
+uvicorn
+alembic
