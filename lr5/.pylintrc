@@ -1,0 +1,29 @@
+[BASIC]
+init-hook='import sys, os; sys.path.append("./app")'
+disable=
+    missing-function-docstring,
+    missing-module-docstring,
+    missing-class-docstring,
+    too-few-public-methods,
+    not-callable,
+    attribute-defined-outside-init,
+    ungrouped-imports,
+    wrong-import-order,
+    duplicate-code,
+    unused-import,
+    too-many-arguments,
+    unused-argument,
+    too-many-positional-arguments,
+    import-outside-toplevel,
+    too-many-instance-attributes,
+    broad-exception-caught,
+    too-many-locals,
+    invalid-name
+ignore-paths=
+    deploy,
+    temp,
+    build,
+    tests
+
+extension-pkg-whitelist=pydantic,orjson
+generated-members=pydantic.PostgresDsn.build

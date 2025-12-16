@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:123@postgres:5432/lr2_db
+    command: >
+      sh -c "
+        python app/main.py &
+        sleep 10 &&
+        echo 'Добавляем тестовые данные...' &&
+        python app/seed_data.py &&
+        python app/seed_more_data.py &&
+        echo 'Все данные добавлены! Приложение готово.' &&
+        echo 'Документация: http://localhost:8000/schema' &&
+        wait
+      "
+
+  postgres:
+    image: postgres:15
+    container_name: lr3-postgres
+    environment:
+      POSTGRES_DB: lr2_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

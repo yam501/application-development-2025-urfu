@@ -1,0 +1,24 @@
+fail_fast: false
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: Black
+        entry: python -m black
+        language: system
+        pass_filenames: false
+        args: ["lr5/app"]
+
+      - id: isort
+        name: isort
+        entry: python -m isort
+        language: system
+        pass_filenames: false
+        args: ["lr5/app"]
+
+      - id: pylint
+        name: pylint
+        entry: python -m pylint
+        language: system
+        pass_filenames: false
+        args: ["lr5/app"]
