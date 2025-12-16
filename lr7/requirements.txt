@@ -1,0 +1,11 @@
+litestar
+sqlalchemy[asyncio]
+asyncpg
+pydantic
+uvicorn[standart]
+alembic
+faststream[rabbit]
+sniffio
+anyio
+h11
+pika
