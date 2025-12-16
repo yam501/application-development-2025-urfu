@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: lr6-postgres
+    environment:
+      POSTGRES_DB: lr6_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: lr6-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=local
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/mnesia
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:123@postgres:5432/lr2_db
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/local
+    command: >
+      sh -c "
+        echo 'Ожидание PostgreSQL...' &&
+        python -c '
+          import time
+          import os
+          from sqlalchemy import create_engine
+          from sqlalchemy.exc import OperationalError
+          for _ in range(30):
+            try:
+              engine = create_engine(os.getenv(\"DATABASE_URL\").replace(\"asyncpg\", \"psycopg2\"))
+              engine.connect()
+              print(\"БД доступна\")
+              break
+            except OperationalError:
+              print(\"Ждём БД...\")
+              time.sleep(2)
+          else:
+            exit(1)
+        ' &&
+        echo 'Создание таблиц...' &&
+        python app/init_db.py &&
+        echo 'Запуск сидов...' &&
+        python app/seed_data.py || echo 'Сиды уже есть' &&
+        python app/seed_more_data.py || echo 'Доп. данные уже есть' &&
+        echo 'Запуск приложения...' &&
+        cd /app &&
+        PYTHONPATH=/app uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
+
+
+
+
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
