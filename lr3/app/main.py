@@ -3,10 +3,10 @@ from litestar import Litestar
 from litestar.di import Provide
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
-from controllers.user_controller import UserController
-from repositories.user_repository import UserRepository
-from services.user_service import UserService
-from models import Base
+from app.controllers.user_controller import UserController
+from app.repositories.user_repository import UserRepository
+from app.services.user_service import UserService
+from app.models import Base
 
 # Настройка базы данных
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:123@127.0.0.1:5432/lr2_db")

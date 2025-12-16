@@ -1,10 +1,10 @@
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import User
-from dto.user_dto import UserCreate, UserUpdate
+from app.models import User
+from app.dto.user_dto import UserCreate, UserUpdate
 from typing import List, Tuple
 from uuid import UUID
-
+from pydantic import ConfigDict
 
 class UserRepository:
     def __init__(self, session: AsyncSession):

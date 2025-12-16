@@ -4,9 +4,9 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from typing import Optional
 
-from dto.user_dto import UserCreate, UserUpdate, UserResponse, UsersResponse
+from app.dto.user_dto import UserCreate, UserUpdate, UserResponse, UsersResponse
 from uuid import UUID
-from services.user_service import UserService
+from app.services.user_service import UserService
 
 
 
